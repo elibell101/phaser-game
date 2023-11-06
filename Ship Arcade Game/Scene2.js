@@ -72,8 +72,8 @@ class Scene2 extends Phaser.Scene {
 
 
         // Player 1 & 2 shoot inputs
-        this.lShift = this.input.keyboard.addKey('LSHIFT');
-        this.slash = this.input.keyboard.addKey('/');
+        this.Vkey = this.input.keyboard.addKey('V');
+        this.Bkey = this.input.keyboard.addKey('B');
         // Creating projectiles group for beams
         this.projectiles = this.add.group();
 
@@ -140,20 +140,21 @@ class Scene2 extends Phaser.Scene {
         this.movePlayerManager();
         this.movePlayer2Manager();
 
-        if (Phaser.Input.Keyboard.JustDown(this.lShift)) {
+        
+        if (Phaser.Input.Keyboard.JustDown(this.Vkey)) {
             if(this.player.active){
                 this.shootBeam();
             }
         }
-
-        if (Phaser.Input.Keyboard.JustDown(this.slash)) {
+        
+        if (Phaser.Input.Keyboard.JustDown(this.Bkey)) {
             if(this.player2.active){
-                this.shootBeam();
+                this.shootBeam2();
             }
         }
 
         // Update all beams
-        for(var i = 0; i < this.projectiles.getChildren().length; ++i) {
+        for(var i = 0; i < this.projectiles.getChildren().length - 1; ++i) {
             var beam = this.projectiles.getChildren()[i];
             beam.update();
         }
@@ -316,6 +317,11 @@ class Scene2 extends Phaser.Scene {
 
     shootBeam(){
         var beam = new Beam(this);
+        this.beamSound.play();
+    }
+
+    shootBeam2(){
+        var beam2 = new Beam2(this);
         this.beamSound.play();
     }
 }
