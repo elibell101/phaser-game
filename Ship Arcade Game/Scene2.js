@@ -25,6 +25,7 @@ class Scene2 extends Phaser.Scene {
         this.ship2.play("ship2_anim");
         this.ship3.play("ship3_anim");
 
+        // Killable VIA mouseclicks
         this.ship1.setInteractive();
         this.ship2.setInteractive();
         this.ship3.setInteractive();
@@ -93,7 +94,7 @@ class Scene2 extends Phaser.Scene {
         this.physics.add.overlap(this.projectiles, this.enemies, this.hitEnemy, null, this);
 
 
-
+        // Score background graphic
         var graphics = this.add.graphics();
         graphics.fillStyle(0x000000, 1);
         graphics.beginPath();
@@ -110,6 +111,7 @@ class Scene2 extends Phaser.Scene {
 
         // Score Label
         this.scoreLabel = this.add.bitmapText(10, 5, "pixelFont", "SCORE", 16);
+        this.killCountLabel = this.add.bitmapText(165, 5, "pixelFont", "KILL COUNT:", 16);
 
         // Sound objects
         this.beamSound = this.sound.add("audio_beam");
@@ -128,12 +130,12 @@ class Scene2 extends Phaser.Scene {
             delay: 0
         }
         this.music.play(musicConfig);
+
+        this.killCount = 0;
     }
 
     update() {
-        this.moveShip(this.ship1, 1);
-        this.moveShip(this.ship2, 2);
-        this.moveShip(this.ship3, 3);
+        this.launchShip(this.ship1, 1);
 
         this.background.tilePositionY -= 0.5;
 
@@ -158,6 +160,14 @@ class Scene2 extends Phaser.Scene {
             var beam = this.projectiles.getChildren()[i];
             beam.update();
         }
+
+        if(this.killCount >= 2) {
+            this.launchShip(this.ship2, 2);
+        }
+
+        if (this.killCount >= 4) {
+            this.launchShip(this.ship3, 3);
+        }
     }
 
     zeroPad(number, size) {
@@ -174,8 +184,10 @@ class Scene2 extends Phaser.Scene {
         projectile.destroy();
         this.resetShipPos(enemy);
         this.score += 15;
+        this.killCount += 1;
         var scoreFormatted = this.zeroPad(this.score, 6);
         this.scoreLabel.text = "SCORE " + scoreFormatted;
+        this.killCountLabel.text = "KILL COUNT: " + this.killCount;
 
         this.explosionSound.play();
     }
@@ -265,7 +277,7 @@ class Scene2 extends Phaser.Scene {
         this.pickupSound.play();
     }
 
-    moveShip(ship, speed) {
+    launchShip(ship, speed) {
         ship.y += speed;
         if (ship.y > config.height) {
             this.resetShipPos(ship);

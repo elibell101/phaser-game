@@ -7,6 +7,11 @@ var gameSettings = {
 var config = {
     width: 256,
     height: 272,
+    scale: {
+        // Fit to window
+        mode: Phaser.Scale.FIT,
+        autoCenter: Phaser.Scale.CENTER_BOTH
+    },
     backgroundColor: 0x000000,
     scene: [Scene1, Scene2],
     pixelArt: true,
