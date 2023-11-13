@@ -59,11 +59,11 @@ class Scene2 extends Phaser.Scene {
         }
 
         // Adds player and animation
-        this.player = this.physics.add.sprite(config.width / 2 - 8, config.height - 64, "player");
-        this.player.play("thrust");
+        this.spawnPlayer1();
+        
 
         this.player2 = this.physics.add.sprite(config.width / 2, config.height - 64, "player");
-        this.player2.play("thrust");
+        this.player2.play("thrust2");
         // Adds keyboard input
         this.JIKL = this.input.keyboard.addKeys('J,I,K,L');
         this.AWSD = this.input.keyboard.addKeys('A,W,S,D');
@@ -134,8 +134,13 @@ class Scene2 extends Phaser.Scene {
         this.killCount = 0;
     }
 
+    spawnPlayer1() {
+        this.player = this.physics.add.sprite(config.width / 2 - 8, config.height - 64, "player");
+        this.player.play("thrust");
+    }
+
     update() {
-        this.launchShip(this.ship1, 1);
+        this.moveShip(this.ship1, 1);
 
         this.background.tilePositionY -= 0.5;
 
@@ -162,11 +167,11 @@ class Scene2 extends Phaser.Scene {
         }
 
         if(this.killCount >= 2) {
-            this.launchShip(this.ship2, 2);
+            this.moveShip(this.ship2, 2);
         }
 
         if (this.killCount >= 4) {
-            this.launchShip(this.ship3, 3);
+            this.moveShip(this.ship3, 3);
         }
     }
 
@@ -277,8 +282,8 @@ class Scene2 extends Phaser.Scene {
         this.pickupSound.play();
     }
 
-    launchShip(ship, speed) {
-        ship.y += speed;
+    moveShip(ship, offset) {
+        ship.y += offset;
         if (ship.y > config.height) {
             this.resetShipPos(ship);
         }
