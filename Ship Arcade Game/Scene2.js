@@ -8,30 +8,26 @@ class Scene2 extends Phaser.Scene {
         
         this.background = this.add.tileSprite(0, 0, config.width, config.height, "background");
         this.background.setOrigin(0,0);
-        
-        this.ship1 = this.add.sprite(config.width/2 - 50, config.height/2, "ship");
-        this.ship2 = this.add.sprite(config.width/2, config.height/2, "ship2");
-        this.ship3 = this.add.sprite(config.width/2 + 50, config.height/2, "ship3");
 
         this.enemies = this.physics.add.group();
-        this.enemies.add(this.ship1);
-        this.enemies.add(this.ship2);
-        this.enemies.add(this.ship3);
-        
 
+        this.ship1 = this.addEnemy("ship", "ship1_anim");
+        this.ship2 = this.addEnemy("ship2", "ship2_anim");
+        this.ship3 = this.addEnemy("ship3", "ship3_anim");
 
-        // Plays ship animations
-        this.ship1.play("ship1_anim");
-        this.ship2.play("ship2_anim");
-        this.ship3.play("ship3_anim");
+        //this.ship2.disableBody(true, true);
+        //this.ship3.disableBody(true, true);
+
 
         // Killable VIA mouseclicks
+        
+        /*
         this.ship1.setInteractive();
         this.ship2.setInteractive();
         this.ship3.setInteractive();
 
         this.input.on('gameobjectdown', this.destroyShip, this);
-
+        */
 
         // Power up animations
         
@@ -128,10 +124,18 @@ class Scene2 extends Phaser.Scene {
             seek: 0,
             loop: false,
             delay: 0
-        }
-        this.music.play(musicConfig);
+        };
 
         this.killCount = 0;
+    }
+
+    addEnemy(spriteName, anim) {
+        var randomX = Phaser.Math.Between(0, config.width);
+        var ship = this.add.sprite(randomX, config.height / 2, spriteName);
+        this.enemies.add(ship);
+        ship.play(anim);
+
+        return ship;
     }
 
     spawnPlayer1() {
@@ -165,12 +169,14 @@ class Scene2 extends Phaser.Scene {
             var beam = this.projectiles.getChildren()[i];
             beam.update();
         }
-
+        
         if(this.killCount >= 2) {
+            //this.ship2.enableBody(true, true);
             this.moveShip(this.ship2, 2);
         }
 
         if (this.killCount >= 4) {
+            //this.ship3.enableBody();
             this.moveShip(this.ship3, 3);
         }
     }
