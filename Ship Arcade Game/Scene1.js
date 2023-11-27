@@ -4,7 +4,14 @@ class Scene1 extends Phaser.Scene {
     }
 
     preload(){
-        this.load.image("background", "assets/images/background.png");
+        //this.load.image("background", "assets/images/background.png");
+
+        this.load.spritesheet("space", "assets/spritesheets/space1_4-frames.png", {
+            frameWidth: 256,
+            frameHeight: 272,
+            startFrame: 0,
+            endFrame: 3,
+        });
         
         this.load.spritesheet("ship", "assets/spritesheets/ship.png", {
             frameWidth: 16,
@@ -38,10 +45,6 @@ class Scene1 extends Phaser.Scene {
             frameWidth: 16,
             frameHeight: 16
         });
-        this.load.spritesheet("explosion2", "assets/spritesheets/explosion2.png", {
-            frameWidth: 24,
-            frameHeight: 24
-        })
 
         // Bitmap Font
         this.load.bitmapFont("pixelFont", "assets/font/font.png", "assets/font/font.xml");
@@ -55,7 +58,8 @@ class Scene1 extends Phaser.Scene {
 
     create() {
         //  A simple background for our game
-        this.bg = this.add.tileSprite(0, 0, config.width, config.height, "background");
+        //this.bg = this.add.tileSprite(0, 0, config.width, config.height, "background");
+        this.bg = this.add.tileSprite(0, 0, config.width, config.height, "space");
         this.bg.setOrigin(0,0);
         this.add.bitmapText(config.width/2 - 75, config.height/2, "pixelFont", "Press Enter!", 32);
 
@@ -72,6 +76,12 @@ class Scene1 extends Phaser.Scene {
         });
 
         // Animations
+        this.anims.create({
+            key: "space_anim",
+            frames: this.anims.generateFrameNumbers("space"),
+            frameRate: 20,
+            repeat: -1
+        });
         this.anims.create({
             key: "ship1_anim",
             frames: this.anims.generateFrameNumbers("ship"),
@@ -143,6 +153,8 @@ class Scene1 extends Phaser.Scene {
             frameRate: 20,
             repeat: -1
         });
+
+        this.bg.play("space_anim");
     }
 
     /*

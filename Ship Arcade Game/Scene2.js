@@ -6,8 +6,9 @@ class Scene2 extends Phaser.Scene {
     create() {
         this.cameras.main.fadeIn(1000, 0, 0, 0)
         
-        this.background = this.add.tileSprite(0, 0, config.width, config.height, "background");
+        this.background = this.add.tileSprite(0, 0, config.width, config.height, "space");
         this.background.setOrigin(0,0);
+        //this.background.play("space_anim");
 
         this.enemies = this.physics.add.group();
 
