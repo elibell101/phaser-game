@@ -117,7 +117,7 @@ class Scene2 extends Phaser.Scene {
 
         // Music
         this.music = this.sound.add("music");
-        var musicConfig = {
+        var musicConfig = ({
             mute: false,
             volume: 0.4,
             rate: 1,
@@ -125,7 +125,7 @@ class Scene2 extends Phaser.Scene {
             seek: 0,
             loop: false,
             delay: 0
-        };
+        });
 
         this.killCount = 0;
     }
