@@ -4,68 +4,50 @@ class Scene2 extends Phaser.Scene {
     }
 
     create() {
-        this.cameras.main.fadeIn(1000, 0, 0, 0)
+        this.cameras.main.fadeIn(1000, 0, 0, 0) // Fades in from the previous scene
         
-        this.background = this.add.tileSprite(0, 0, config.width, config.height, "space");
+        this.background = this.add.tileSprite(0, 0, config.width, config.height, "space"); // Adds background to the page
         this.background.setOrigin(0,0);
         //this.background.play("space_anim");
 
-        this.enemies = this.physics.add.group();
+        this.enemies = this.physics.add.group(); // Enemy physics group
 
+        // Uses addEnemy function to create enemy ships, add them to enemy physics group, and play their respective animations
         this.ship1 = this.addEnemy("ship", "ship1_anim");
         this.ship2 = this.addEnemy("ship2", "ship2_anim");
         this.ship3 = this.addEnemy("ship3", "ship3_anim");
 
         //this.ship2.disableBody(true, true);
         //this.ship3.disableBody(true, true);
-
-
-        // Killable VIA mouseclicks
         
+
+        // The setInteractive function makes an item clickable
         /*
         this.ship1.setInteractive();
         this.ship2.setInteractive();
         this.ship3.setInteractive();
 
         this.input.on('gameobjectdown', this.destroyShip, this);
-        */
+        */        
 
-        // Power up animations
-        
-
+        // Makes world have boundary collision
         this.physics.world.setBoundsCollision();
 
         // Physics group for power ups
         this.powerUps = this.physics.add.group();
 
-        var maxObjects = 4;
-        for (var i = 0; i <= gameSettings.maxPowerUps; ++i) {
-            var powerUp = this.physics.add.sprite(16, 16, "power-up");
-            this.powerUps.add(powerUp);
-            powerUp.setRandomPosition(0, 0, config.width, config.height);
-
-            if (Math.random() > 0.5) {
-                powerUp.play("red");
-            } else {
-                powerUp.play("gray");
-            }
-    
-            powerUp.setVelocity(gameSettings.powerUpVel, gameSettings.powerUpVel);
-            powerUp.setCollideWorldBounds(true);
-            powerUp.setBounce(1);
-        }
+        this.spawnPowerUp();
 
         // Adds player and animation
-        this.spawnPlayer1();
+        this.player1 = this.spawnPlayer("player", "thrust");
+        this.player2 = this.spawnPlayer("player2", "thrust2");
         
 
-        this.player2 = this.physics.add.sprite(config.width / 2, config.height - 64, "player");
-        this.player2.play("thrust2");
         // Adds keyboard input
         this.JIKL = this.input.keyboard.addKeys('J,I,K,L');
         this.AWSD = this.input.keyboard.addKeys('A,W,S,D');
         // Sets player world collision
-        this.player.setCollideWorldBounds(true);
+        this.player1.setCollideWorldBounds(true);
         this.player2.setCollideWorldBounds(true);
 
 
@@ -82,11 +64,11 @@ class Scene2 extends Phaser.Scene {
 
 
         // Player 1 physics overlap
-        this.physics.add.overlap(this.player, this.powerUps, this.pickPowerUp, null, this);
-        this.physics.add.overlap(this.player, this.enemies, this.hurtPlayer, null, this);
+        this.physics.add.overlap(this.player1, this.powerUps, this.pickPowerUp, null, this); // for player to pick up power up
+        this.physics.add.overlap(this.player1, this.enemies, this.hurtPlayer, null, this); // player collides with enemy
         // Player 2 physics overlap
-        this.physics.add.overlap(this.player2, this.powerUps, this.pickPowerUp, null, this);
-        this.physics.add.overlap(this.player2, this.enemies, this.hurtPlayer2, null, this);
+        this.physics.add.overlap(this.player2, this.powerUps, this.pickPowerUp, null, this); // for player to pick up power up
+        this.physics.add.overlap(this.player2, this.enemies, this.hurtPlayer2, null, this); // player collides with enemy
 
         this.physics.add.overlap(this.projectiles, this.enemies, this.hitEnemy, null, this);
 
@@ -103,20 +85,25 @@ class Scene2 extends Phaser.Scene {
         graphics.closePath();
         graphics.fillPath();
 
-        // Score
+        // Score Label (pos x, pos y, font, label, font size)
         this.score = 0;
-
-        // Score Label
         this.scoreLabel = this.add.bitmapText(10, 5, "pixelFont", "SCORE", 16);
+        
+        // Kill count label (pos x, pos y, font, label, font size)
+        this.killCount = 0;
         this.killCountLabel = this.add.bitmapText(165, 5, "pixelFont", "KILL COUNT:", 16);
+
+        // Lives Label
+        this.lives = 2;
+        this.livesLabel = this.add.bitmapText(10, 25, "pixelFont", "LIVES: " + this.lives, 16);
 
         // Sound objects
         this.beamSound = this.sound.add("audio_beam");
         this.explosionSound = this.sound.add("audio_explosion");
         this.pickupSound = this.sound.add("audio_pickup");
 
-        // Music
-        this.music = this.sound.add("music");
+        // Adds music (commented out because it's very loud)
+        // this.music = this.sound.add("music");
         var musicConfig = ({
             mute: false,
             volume: 0.4,
@@ -126,8 +113,24 @@ class Scene2 extends Phaser.Scene {
             loop: false,
             delay: 0
         });
+    }
 
-        this.killCount = 0;
+    spawnPowerUp() {
+        for (var i = 0; i <= gameSettings.maxPowerUps; ++i) {
+            var powerUp = this.physics.add.sprite(16, 16, "power-up");
+            this.powerUps.add(powerUp);
+            powerUp.setRandomPosition(0, 0, config.width, config.height);
+
+            if (Math.random() > 0.5) {
+                powerUp.play("red");
+            } else {
+                powerUp.play("gray");
+            }
+
+            powerUp.setVelocity(gameSettings.powerUpVel, gameSettings.powerUpVel);
+            powerUp.setCollideWorldBounds(true);
+            powerUp.setBounce(1);
+        }
     }
 
     addEnemy(spriteName, anim) {
@@ -139,13 +142,20 @@ class Scene2 extends Phaser.Scene {
         return ship;
     }
 
-    spawnPlayer1() {
-        this.player = this.physics.add.sprite(config.width / 2 - 8, config.height - 64, "player");
-        this.player.play("thrust");
+    spawnPlayer(spriteName, anim) {
+        var randomX = Phaser.Math.Between(0, config.width);
+        var player = this.physics.add.sprite(randomX, config.height - 64, spriteName);
+        player.play(anim);
+
+        return player;
     }
 
     update() {
-        this.moveShip(this.ship1, 1);
+        this.moveShip(this.ship1, .3);
+        this.moveShip(this.ship2, .5);
+        this.moveShip(this.ship3, 1);
+        //this.ship2.disableBody(true,true);
+        //this.ship2.disableBody(true,true);
 
         this.background.tilePositionY -= 0.5;
 
@@ -154,7 +164,7 @@ class Scene2 extends Phaser.Scene {
 
         
         if (Phaser.Input.Keyboard.JustDown(this.Vkey)) {
-            if(this.player.active){
+            if(this.player1.active){
                 this.shootBeam();
             }
         }
@@ -170,16 +180,17 @@ class Scene2 extends Phaser.Scene {
             var beam = this.projectiles.getChildren()[i];
             beam.update();
         }
-        
+        /*
         if(this.killCount >= 2) {
             //this.ship2.enableBody(true, true);
-            this.moveShip(this.ship2, 2);
+            //this.moveShip(this.ship2, 2);
         }
 
         if (this.killCount >= 4) {
-            //this.ship3.enableBody();
-            this.moveShip(this.ship3, 3);
+            //this.ship2.enableBody(true, true);
+            //this.moveShip(this.ship3, 3);
         }
+        */
     }
 
     zeroPad(number, size) {
@@ -206,8 +217,15 @@ class Scene2 extends Phaser.Scene {
 
     hurtPlayer(player, enemy){
         this.resetShipPos(enemy);
+        
+        this.lives -= 1;
+        this.livesLabel.text = "LIVES: " + this.lives;
 
-        if(this.player.alpha < 1) {
+        if(this.lives < 1) {
+            this.scene.start('gameOver');
+        }
+
+        if(this.player1.alpha < 1) {
             return;
         }
         
@@ -227,18 +245,18 @@ class Scene2 extends Phaser.Scene {
     resetPlayer(){
         var x = config.width / 2 - 8;
         var y = config.height + 64;
-        this.player.enableBody(true, x, y, true, true);
+        this.player1.enableBody(true, x, y, true, true);
 
-        this.player.alpha = 0.5;
+        this.player1.alpha = 0.5;
 
         var tween = this.tweens.add({
-            targets: this.player,
+            targets: this.player1,
             y: config.height - 64,
             ease: 'Power1',
             duration: 1500,
             repeat: 0,
             onComplete: function(){
-                this.player.alpha = 1;
+                this.player1.alpha = 1;
             },
             callbackScope: this
         })
@@ -246,6 +264,13 @@ class Scene2 extends Phaser.Scene {
 
     hurtPlayer2(player, enemy){
         this.resetShipPos(enemy);
+
+        this.lives -= 1;
+        this.livesLabel.text = "LIVES: " + this.lives;
+
+        if(this.lives < 1) {
+            this.scene.start('gameOver');
+        }
 
         if(this.player2.alpha < 1) {
             return;
@@ -308,18 +333,18 @@ class Scene2 extends Phaser.Scene {
     }
 
     movePlayerManager() {
-        this.player.setVelocity(0);
+        this.player1.setVelocity(0);
 
         if(this.AWSD.A.isDown){
-            this.player.setVelocityX(-gameSettings.playerSpeed);
+            this.player1.setVelocityX(-gameSettings.playerSpeed);
         } else if(this.AWSD.D.isDown){
-            this.player.setVelocityX(gameSettings.playerSpeed);
+            this.player1.setVelocityX(gameSettings.playerSpeed);
         }
 
         if(this.AWSD.W.isDown){
-            this.player.setVelocityY(-gameSettings.playerSpeed);
+            this.player1.setVelocityY(-gameSettings.playerSpeed);
         } else if(this.AWSD.S.isDown){
-            this.player.setVelocityY(gameSettings.playerSpeed);
+            this.player1.setVelocityY(gameSettings.playerSpeed);
         }
     }
 
