@@ -36,8 +36,6 @@ class Scene2 extends Phaser.Scene {
         // Physics group for power ups
         this.powerUps = this.physics.add.group();
 
-        this.spawnPowerUp();
-
         // Adds player and animation
         this.player1 = this.spawnPlayer("player", "thrust");
         this.player2 = this.spawnPlayer("player2", "thrust2");
@@ -143,7 +141,7 @@ class Scene2 extends Phaser.Scene {
     }
 
     spawnPlayer(spriteName, anim) {
-        var randomX = Phaser.Math.Between(0, config.width);
+        var randomX = Phaser.Math.Between(80, 160);
         var player = this.physics.add.sprite(randomX, config.height - 64, spriteName);
         player.play(anim);
 
@@ -180,6 +178,7 @@ class Scene2 extends Phaser.Scene {
             var beam = this.projectiles.getChildren()[i];
             beam.update();
         }
+        
         /*
         if(this.killCount >= 2) {
             //this.ship2.enableBody(true, true);
